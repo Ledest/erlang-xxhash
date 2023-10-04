@@ -1,9 +1,7 @@
-*.o
-.ebin
-*.beam
 .DS*
-.eunit
-ebin
-*.so
-.rebar
-*.d
+/.eunit
+/ebin
+/doc
+/priv/*.so
+/.rebar
+/c_src/*.o
