@@ -19,10 +19,24 @@
 
 -define(nif_stub, nif_stub_error(?LINE)).
 
+-ifndef(RESOURCE_IS_REFERENCE).
+-ifdef(OTP_RELEASE).
+-if(?OTP_RELEASE >= 20).
+-define(RESOURCE_IS_REFERENCE, true).
+-endif.
+-endif.
+-endif.
+
 -type hash_input() :: binary() | atom() | number() | list().
--type hash_handle() :: binary().
 -type hash_digest() :: non_neg_integer().
 -type hash_seed() :: non_neg_integer().
+-ifdef(RESOURCE_IS_REFERENCE).
+-type hash_handle() :: reference().
+-define(is_resource(R), is_reference(R)).
+-else.
+-type hash_handle() :: binary().
+-define(is_resource(R), is_binary(R)).
+-endif.
 
 
 nif_stub_error(Line) ->
@@ -123,7 +137,7 @@ hash32_init(Seed) when is_integer(Seed) ->
 
 -spec hash32_update(Handle::hash_handle(), Data::hash_input()) -> ok.
 
-hash32_update(Handle, Data) when is_binary(Handle) ->
+hash32_update(Handle, Data) when ?is_resource(Handle) ->
   hash32_update_impl(Handle, supported_to_binary(Data)).
 
 
@@ -131,7 +145,7 @@ hash32_update(Handle, Data) when is_binary(Handle) ->
 
 -spec hash32_digest(Handle::hash_handle()) -> hash_digest().
 
-hash32_digest(Handle) when is_binary(Handle) ->
+hash32_digest(Handle) when ?is_resource(Handle) ->
   hash32_digest_impl(Handle).
 
 
@@ -176,7 +190,7 @@ hash64_init(Seed) when is_integer(Seed) ->
 
 -spec hash64_update(Handle::hash_handle(), Data::hash_input()) -> ok.
 
-hash64_update(Handle, Data) when is_binary(Handle) ->
+hash64_update(Handle, Data) when ?is_resource(Handle) ->
   hash64_update_impl(Handle, supported_to_binary(Data)).
 
 
@@ -184,7 +198,7 @@ hash64_update(Handle, Data) when is_binary(Handle) ->
 
 -spec hash64_digest(Handle::hash_handle()) -> hash_digest().
 
-hash64_digest(Handle) when is_binary(Handle) ->
+hash64_digest(Handle) when ?is_resource(Handle) ->
   hash64_digest_impl(Handle).
 
 
